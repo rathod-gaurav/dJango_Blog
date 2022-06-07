@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block start %}
+
+<div class="container">
+    <form method="post" class="my-5 py-5" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-12">
+                <label>Enter Blog Title</label>
+                <input name="title" type="text" class="form-control" placeholder="Enter Title Here">
+            </div>
+            <div class="col-md-12">
+                {{ form.media }}
+                {{ form.as_p }}
+            </div>
+            <div class="col-md-12">
+                <input type="file" name="image" class="form-control">
+            </div>
+        </div>
+
+        <button class="btn btn-primary mt-4" type="submit">Create Blog</button>
+    </form>
+</div>
+
+{% endblock %}

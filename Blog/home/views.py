@@ -4,7 +4,8 @@ from .forms import *
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    context = {'blogs': BlogModel.objects.all()}
+    return render(request, 'home.html', context)
 
 def login_view(request):
     return render(request, 'login.html')
@@ -30,6 +31,15 @@ def add_blog(request):
     except Exception as e:
         print(e)
     return render(request, 'add_blog.html', context)
+
+def blog_detail(request, slug):
+    context = {}
+    try:
+        blog_obj = BlogModel.objects.filter(slug = slug).first()
+        context['blog_obj'] = blog_obj
+    except Exception as e:
+        print(e)
+    return render(request, 'blog_detail.html', context)
 
 def register_view(request):
     return render(request, 'register.html')

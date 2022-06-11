@@ -96,3 +96,14 @@ def blog_update(request, slug):
 
 def register_view(request):
     return render(request, 'register.html')
+
+def verify_view(request, token):
+    try:
+        profile_obj = Profile.objects.filter(token=token).first()
+        if profile_obj:
+            profile_obj.is_verified = True
+            profile_obj.save()
+        return redirect('/login/')
+    except Exception as e:
+        print(e)
+    return redirect('/')

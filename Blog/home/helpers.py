@@ -12,3 +12,15 @@ def generate_slug(text):
     if BlogModel.objects.filter(slug = new_slug).exists():
         new_slug = generate_slug(text + generate_random_string(5))
     return new_slug
+
+#send email
+from django.conf import settings
+from django.core.mail import send_mail
+
+def send_mail_to_user(token, email):
+    subject = f"Your account needs to be verified"
+    message = f"Dear user {email}, please paste the below link in your browser to verify your account - http://localhost:8000/verify/{token}"
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+    send_mail(subject, message, email_from, recipient_list)
+    return True

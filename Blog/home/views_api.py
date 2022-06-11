@@ -1,8 +1,12 @@
+from lib2to3.pgen2 import token
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+
+from .models import Profile
+from .helpers import *
 
 class LoginView(APIView):
     def post(self, request):
@@ -27,6 +31,10 @@ class LoginView(APIView):
                 response['message'] = 'invalid username, user not found'
                 raise Exception('invalid username, user not found')
             
+            if not Profile.objects.filter(user = check_user).first().is_verified:
+                response['message'] = 'Your profile is not verified'
+                raise Exception('Your profile is not verified')
+
             user_obj = authenticate(username = data.get('username'), password = data.get('password'))
 
             if user_obj:
@@ -70,9 +78,16 @@ class RegisterView(APIView):
                 response['message'] = 'username is already taken'
                 raise Exception('username is already taken')
             
-            user_obj = User.objects.create(username = data.get('username'))
+            user_obj = User.objects.create(email = data.get('username'), username = data.get('username'))
             user_obj.set_password(data.get('password'))
             user_obj.save()
+
+            token = generate_random_string(20)
+            Profile.objects.create(user = user_obj, token = token)
+
+            #send email for verification
+            send_mail_to_user(token, data.get('username'))
+
             response['message'] = 'user created successfully'
             response['status'] = '200'
             
